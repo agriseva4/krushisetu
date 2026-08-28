@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  --font-display: "Fraunces", "Noto Serif Devanagari", Georgia, serif;
+  --font-body: "Inter", "Noto Sans Devanagari", system-ui, sans-serif;
+
+  --field-950: #0f2019;
+  --field-900: #16281f;
+  --field-800: #1f4d3d;
+  --field-700: #2b6650;
+  --field-600: #37805f;
+  --field-100: #dbe8dd;
+  --field-50: #eff3e8;
+
+  --mustard-600: #b9862b;
+  --mustard-500: #d9a441;
+  --mustard-400: #e6bd6a;
+  --mustard-100: #f7e6c4;
+
+  --clay-700: #8a4429;
+  --clay-600: #a65a3d;
+  --clay-100: #f0ddd2;
+
+  --paper: #f4f1e6;
+  --paper-raised: #fbf9f1;
+  --ink: #1c2b22;
+  --ink-soft: #4b5a4f;
+
+  --whatsapp: #1e7e5c;
+  --whatsapp-bg: #dcefe5;
+
+  --radius-card: 18px;
+  --radius-pill: 999px;
+}
+
+@theme inline {
+  --color-field-950: var(--field-950);
+  --color-field-900: var(--field-900);
+  --color-field-800: var(--field-800);
+  --color-field-700: var(--field-700);
+  --color-field-600: var(--field-600);
+  --color-field-100: var(--field-100);
+  --color-field-50: var(--field-50);
+  --color-mustard-600: var(--mustard-600);
+  --color-mustard-500: var(--mustard-500);
+  --color-mustard-400: var(--mustard-400);
+  --color-mustard-100: var(--mustard-100);
+  --color-clay-700: var(--clay-700);
+  --color-clay-600: var(--clay-600);
+  --color-clay-100: var(--clay-100);
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-bg: var(--whatsapp-bg);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* signature furrow motif -- ploughed-field rows, used once as a hero backdrop */
+.furrow-rows {
+  background-image: repeating-linear-gradient(
+    -6deg,
+    var(--field-700) 0px,
+    var(--field-700) 2px,
+    transparent 2px,
+    transparent 34px
+  );
+  opacity: 0.16;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise-in {
+    animation: rise-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--mustard-600);
+  outline-offset: 2px;
+}
