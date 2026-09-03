@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import { supabase, Vendor, Product } from "@/lib/supabase";
 import { useLanguage } from "@/lib/i18n";
-import { Loader2, MapPin, MessageCircle, Store } from "lucide-react";
+import { Loader2, MapPin, MessageCircle, Store, BadgeCheck } from "lucide-react";
 import Link from "next/link";
 
 function VendorProfileContent() {
@@ -97,9 +97,17 @@ function VendorProfileContent() {
                   )}
                 </span>
                 <div>
-                  <h1 className="font-display text-xl sm:text-2xl font-medium text-[var(--ink)]">
+                  <h1 className="font-display text-xl sm:text-2xl font-medium text-[var(--ink)] flex items-center gap-1.5">
                     {vendor.company_name}
+                    {vendor.is_verified && (
+                      <BadgeCheck size={18} className="text-[var(--field-700)] shrink-0" aria-hidden="true" />
+                    )}
                   </h1>
+                  {vendor.is_verified && (
+                    <p className="text-xs text-[var(--field-700)] font-medium mt-0.5">
+                      {lang === "mr" ? "पडताळणी झालेला विक्रेता" : "Verified vendor"}
+                    </p>
+                  )}
                   {vendor.village && (
                     <p className="text-sm text-[var(--ink-soft)] flex items-center gap-1 mt-1">
                       <MapPin size={14} aria-hidden="true" />

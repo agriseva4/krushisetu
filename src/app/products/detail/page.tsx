@@ -5,7 +5,8 @@ import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import { supabase, Product } from "@/lib/supabase";
 import { useLanguage } from "@/lib/i18n";
-import { Loader2, MapPin, MessageCircle, Package, Store } from "lucide-react";
+import { Loader2, MapPin, MessageCircle, Package, Store, BadgeCheck } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 
 function ProductDetailContent() {
@@ -115,7 +116,12 @@ function ProductDetailContent() {
                     <Store size={19} className="text-[var(--field-800)]" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="text-sm font-medium text-[var(--ink)]">{vendor.company_name}</p>
+                    <p className="text-sm font-medium text-[var(--ink)] flex items-center gap-1">
+                      {vendor.company_name}
+                      {vendor.is_verified && (
+                        <BadgeCheck size={14} className="text-[var(--field-700)] shrink-0" aria-hidden="true" />
+                      )}
+                    </p>
                     {vendor.village && (
                       <p className="text-xs text-[var(--ink-soft)] flex items-center gap-1 mt-0.5">
                         <MapPin size={12} aria-hidden="true" />
@@ -134,6 +140,17 @@ function ProductDetailContent() {
                   <MessageCircle size={18} aria-hidden="true" />
                   {lang === "mr" ? "विक्रेत्याला WhatsApp करा" : "WhatsApp the vendor"}
                 </a>
+
+                <div className="mt-3 flex justify-center">
+                  <ShareButton
+                    text={
+                      lang === "mr"
+                        ? `हे बघा — ${product.name}, KrushiSetu वर`
+                        : `Check this out — ${product.name}, on KrushiSetu`
+                    }
+                    url={typeof window !== "undefined" ? window.location.href : ""}
+                  />
+                </div>
               </div>
             )}
           </div>

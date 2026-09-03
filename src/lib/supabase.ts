@@ -22,6 +22,7 @@ export type Vendor = {
   whatsapp_number: string;
   profile_photo_url: string | null;
   description: string | null;
+  is_verified?: boolean;
   created_at: string;
 };
 

@@ -6,12 +6,13 @@ import { useLanguage } from "@/lib/i18n";
 import { categories } from "@/lib/categories";
 import { supabase, Vendor } from "@/lib/supabase";
 import Link from "next/link";
-import { ArrowRight, Landmark, MapPin, MessageCircle, Search, Store, PhoneCall } from "lucide-react";
+import { ArrowRight, BadgeCheck, Landmark, MapPin, MessageCircle, Search, Store, PhoneCall } from "lucide-react";
 
 export default function Home() {
   const { lang, t } = useLanguage();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [vendorsLoaded, setVendorsLoaded] = useState(false);
+  const [counts, setCounts] = useState<{ vendors: number; products: number } | null>(null);
 
   useEffect(() => {
     supabase
@@ -23,6 +24,13 @@ export default function Home() {
         setVendors((data as Vendor[]) ?? []);
         setVendorsLoaded(true);
       });
+
+    Promise.all([
+      supabase.from("vendors").select("*", { count: "exact", head: true }),
+      supabase.from("products").select("*", { count: "exact", head: true }).eq("is_active", true),
+    ]).then(([vendorRes, productRes]) => {
+      setCounts({ vendors: vendorRes.count ?? 0, products: productRes.count ?? 0 });
+    });
   }, []);
 
   return (
@@ -42,6 +50,13 @@ export default function Home() {
             <p className="rise-in mt-5 text-white/75 max-w-xl text-[15px] sm:text-base leading-relaxed">
               {t("heroSub")}
             </p>
+            {counts && (counts.vendors > 0 || counts.products > 0) && (
+              <p className="rise-in mt-4 text-sm text-[var(--mustard-400)] font-medium">
+                {lang === "mr"
+                  ? `${counts.vendors} विक्रेते · ${counts.products} उत्पादने सध्या उपलब्ध`
+                  : `${counts.vendors} vendors · ${counts.products} products currently listed`}
+              </p>
+            )}
             <div className="rise-in mt-8 flex flex-wrap gap-3">
               <Link
                 href="/products"
@@ -114,7 +129,12 @@ export default function Home() {
                         )}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{v.company_name}</p>
+                        <p className="text-sm font-medium truncate flex items-center gap-1">
+                          {v.company_name}
+                          {v.is_verified && (
+                            <BadgeCheck size={14} className="text-[var(--field-700)] shrink-0" aria-hidden="true" />
+                          )}
+                        </p>
                         {v.village && (
                           <p className="text-xs text-[var(--ink-soft)] flex items-center gap-1 mt-0.5">
                             <MapPin size={12} aria-hidden="true" />

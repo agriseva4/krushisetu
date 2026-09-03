@@ -4,8 +4,10 @@ import { LanguageProvider } from "@/lib/i18n";
 import WhatsAppFab from "@/components/WhatsAppFab";
 
 export const metadata: Metadata = {
-  title: "कृषीसेतू | KrushiSetu",
-  description: "शेतकरी आणि स्थानिक विक्रेते यांना जोडणारा सेतू",
+  title: "कृषीसेतू | KrushiSetu — शेतकरी आणि स्थानिक विक्रेते यांना जोडणारा सेतू",
+  description:
+    "पुणे जिल्ह्यातील शेतकऱ्यांसाठी खते, बियाणे, अवजारे स्थानिक विक्रेत्यांकडून थेट WhatsApp वर मिळवा. सरकारी योजनांची माहितीही एका ठिकाणी.",
+  keywords: ["शेती", "खते", "कृषी", "farmer marketplace Maharashtra", "krishi", "agriculture Pune"],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

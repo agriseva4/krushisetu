@@ -1,12 +1,37 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import { useLanguage } from "@/lib/i18n";
-import { schemes } from "@/lib/schemes";
-import { ExternalLink, Landmark } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { ExternalLink, Landmark, Loader2 } from "lucide-react";
+
+type SchemeRow = {
+  id: string;
+  title_mr: string;
+  title_en: string;
+  summary_mr: string;
+  summary_en: string;
+  eligibility_mr: string;
+  eligibility_en: string;
+  official_url: string;
+};
 
 export default function SchemesPage() {
   const { lang } = useLanguage();
+  const [schemes, setSchemes] = useState<SchemeRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("schemes")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .then(({ data }) => {
+        setSchemes((data as SchemeRow[]) ?? []);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <>
@@ -26,32 +51,38 @@ export default function SchemesPage() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-3">
-          {schemes.map((s) => {
-            const Icon = s.icon;
-            return (
+        {loading && (
+          <div className="flex items-center justify-center py-20 text-[var(--ink-soft)] gap-2">
+            <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+            <span className="text-sm">{lang === "mr" ? "लोड होत आहे…" : "Loading…"}</span>
+          </div>
+        )}
+
+        {!loading && (
+          <div className="flex flex-col gap-3">
+            {schemes.map((s) => (
               <div
-                key={s.slug}
+                key={s.id}
                 className="rounded-[var(--radius-card)] bg-[var(--paper-raised)] border border-black/5 p-4 sm:p-5 flex gap-4"
               >
                 <span className="w-10 h-10 rounded-xl bg-[var(--field-50)] flex items-center justify-center shrink-0">
-                  <Icon size={18} className="text-[var(--field-700)]" aria-hidden="true" />
+                  <Landmark size={18} className="text-[var(--field-700)]" aria-hidden="true" />
                 </span>
                 <div className="flex-1 min-w-0">
                   <h2 className="font-display text-base sm:text-lg font-medium text-[var(--ink)]">
-                    {lang === "mr" ? s.titleMr : s.titleEn}
+                    {lang === "mr" ? s.title_mr : s.title_en}
                   </h2>
                   <p className="text-sm text-[var(--ink-soft)] mt-1.5 leading-relaxed">
-                    {lang === "mr" ? s.summaryMr : s.summaryEn}
+                    {lang === "mr" ? s.summary_mr : s.summary_en}
                   </p>
                   <p className="text-xs text-[var(--field-700)] mt-2 font-medium">
                     {lang === "mr" ? "पात्रता: " : "Eligibility: "}
                     <span className="text-[var(--ink-soft)] font-normal">
-                      {lang === "mr" ? s.eligibilityMr : s.eligibilityEn}
+                      {lang === "mr" ? s.eligibility_mr : s.eligibility_en}
                     </span>
                   </p>
                   <a
-                    href={s.officialUrl}
+                    href={s.official_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--field-800)] mt-3 hover:underline"
@@ -61,9 +92,9 @@ export default function SchemesPage() {
                   </a>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
     </>
   );

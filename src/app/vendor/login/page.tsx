@@ -5,29 +5,30 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { supabase } from "@/lib/supabase";
 import { useLanguage } from "@/lib/i18n";
-import { Loader2, Phone, ShieldCheck } from "lucide-react";
+import { Loader2, Mail, ShieldCheck } from "lucide-react";
 
 export default function VendorLoginPage() {
   const { lang } = useLanguage();
   const router = useRouter();
 
-  const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [phone, setPhone] = useState("");
+  const [step, setStep] = useState<"email" | "otp">("email");
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fullPhone = `+91${phone.replace(/\D/g, "")}`;
-
   async function sendOtp(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (phone.replace(/\D/g, "").length !== 10) {
-      setError(lang === "mr" ? "10 अंकी मोबाईल नंबर टाका." : "Enter a valid 10-digit mobile number.");
+    if (!email.includes("@") || !email.includes(".")) {
+      setError(lang === "mr" ? "बरोबर email टाका." : "Enter a valid email address.");
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({ phone: fullPhone });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: true },
+    });
     setLoading(false);
     if (error) {
       setError(
@@ -49,9 +50,9 @@ export default function VendorLoginPage() {
     }
     setLoading(true);
     const { error } = await supabase.auth.verifyOtp({
-      phone: fullPhone,
+      email,
       token: otp,
-      type: "sms",
+      type: "email",
     });
     setLoading(false);
     if (error) {
@@ -67,8 +68,8 @@ export default function VendorLoginPage() {
       <main className="flex-1 max-w-sm mx-auto w-full px-4 sm:px-6 py-14">
         <div className="text-center mb-8">
           <span className="w-12 h-12 rounded-2xl bg-[var(--field-800)] flex items-center justify-center mx-auto mb-4">
-            {step === "phone" ? (
-              <Phone size={20} className="text-[var(--mustard-400)]" aria-hidden="true" />
+            {step === "email" ? (
+              <Mail size={20} className="text-[var(--mustard-400)]" aria-hidden="true" />
             ) : (
               <ShieldCheck size={20} className="text-[var(--mustard-400)]" aria-hidden="true" />
             )}
@@ -77,33 +78,26 @@ export default function VendorLoginPage() {
             {lang === "mr" ? "विक्रेता लॉगिन" : "Vendor Login"}
           </h1>
           <p className="text-sm text-[var(--ink-soft)] mt-1.5">
-            {step === "phone"
+            {step === "email"
               ? lang === "mr"
-                ? "तुमचा मोबाईल नंबर टाका, आम्ही OTP पाठवू."
-                : "Enter your mobile number, we'll send an OTP."
+                ? "तुमचा email टाका, आम्ही OTP पाठवू."
+                : "Enter your email, we'll send an OTP."
               : lang === "mr"
-                ? `${fullPhone} वर पाठवलेला 6 अंकी कोड टाका.`
-                : `Enter the 6-digit code sent to ${fullPhone}.`}
+                ? `${email} वर पाठवलेला 6 अंकी कोड टाका.`
+                : `Enter the 6-digit code sent to ${email}.`}
           </p>
         </div>
 
-        {step === "phone" ? (
+        {step === "email" ? (
           <form onSubmit={sendOtp} className="flex flex-col gap-3">
-            <div className="flex items-center rounded-[var(--radius-card)] border border-black/10 bg-[var(--paper-raised)] overflow-hidden">
-              <span className="px-3.5 text-sm text-[var(--ink-soft)] border-r border-black/10 py-3.5">
-                +91
-              </span>
-              <input
-                type="tel"
-                inputMode="numeric"
-                maxLength={10}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                placeholder="98765 43210"
-                className="flex-1 px-3.5 py-3.5 text-sm bg-transparent outline-none"
-                autoFocus
-              />
-            </div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={lang === "mr" ? "tumcha@email.com" : "you@email.com"}
+              className="px-3.5 py-3.5 text-sm rounded-[var(--radius-card)] border border-black/10 bg-[var(--paper-raised)] outline-none"
+              autoFocus
+            />
             {error && <p className="text-xs text-[var(--clay-700)]">{error}</p>}
             <button
               type="submit"
@@ -137,10 +131,10 @@ export default function VendorLoginPage() {
             </button>
             <button
               type="button"
-              onClick={() => setStep("phone")}
+              onClick={() => setStep("email")}
               className="text-xs text-[var(--ink-soft)] underline mt-1"
             >
-              {lang === "mr" ? "नंबर बदला" : "Change number"}
+              {lang === "mr" ? "email बदला" : "Change email"}
             </button>
           </form>
         )}
